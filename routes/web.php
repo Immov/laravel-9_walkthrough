@@ -47,37 +47,3 @@ Route::get('/', HomeController::class);
 
 // Fallback Route, like app.get('/*') on expressJs
 Route::fallback(FallbackController::class);
-
-
-// ==========NOTES==========
-
-/*	Route Resource
-	// Includes all the methods(index, show, create, store, edit, update, destroy)
-	// Also have a premade names like blog.index, blog.destroy, etc
-	// Route::resource('blog', PostController::class);
-*/
-
-// Return view
-// Route::view('/blog', 'blog.index', ['name' => 'Immov']);
-
-/*	REGEX for parameter
-	Route::get('/blog/{id?}/{name?}', [PostController::class, 'show'])
-	->where([
-		'id' => '[0-9]+', // or use ->whereNumber('id')
-		'name' => '[A-Za-z]+' // or use ->whereAlpha('name')
-	]); */
-
-/*	OR
-	Route::get('/blog/{id}/{name}', [PostController::class, 'index'])
-	->whereNumber('id')
-	->whereAlpha('name');
- */
-
-
-// Multiple HTTP verbs
-
-// Route any methods inside [], in this case GET and POST, to run index on PostController
-// Route::match(['GET', 'POST'], '/blog', [PostController::class, 'index']);
-
-// Route ANY methods of /blog, to run index on PostController
-// Route::any('/blog', [PostController::class, 'index']);
