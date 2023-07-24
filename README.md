@@ -81,8 +81,43 @@ public function up() {
 
 ## Seeder
 
+To make a mockup data
+
 `php artisan make:seeder PostTableSeeder`
 `php artisan make:model Post`
 
 Run seeder
 `php artisan migrate --seed`
+
+## Model Factories
+
+To make a mockup data template
+`php artisan make:factory PostFactory`
+
+Syntax
+
+```php
+return [
+	'title' => 'Model Factories',
+	'excerpt' => 'Excerpt of our first model factory',
+	'body' => 'Content of body',
+	'image_path' => 'Image Path',
+	'is_published' => 1,
+	'min_to_read' => 2
+];
+```
+
+Template using faker
+
+```php
+return [
+	'title' => $this->faker->unique->sentence(),
+	'excerpt' => $this->faker->realText($maxNbChars = 50), // Max Char
+	'body' => $this->faker->text(),
+	'image_path' => $this->faker->imageUrl(640, 480), //Width and Height
+	'is_published' => 1,
+	'min_to_read' => $this->faker->numberBetween(1, 10)
+];
+```
+
+`php artisan db:seed`

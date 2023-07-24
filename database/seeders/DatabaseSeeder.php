@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Post;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,6 +14,13 @@ class DatabaseSeeder extends Seeder {
 	 */
 	public function run() {
 		// \App\Models\User::factory(10)->create(); // Default Method
-		$this->call(PostTableSeeder::class); // Simpler Method
+		// $this->call(PostTableSeeder::class); // Simpler Method
+		Post::factory(100)->create(); // User Faker. Create 100 data
+
+		/*	Override the body
+		Post::factory(100)->create([
+			'body' => 'Overriding the body of our post'
+		]);
+		*/
 	}
 }

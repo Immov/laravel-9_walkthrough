@@ -14,7 +14,7 @@ return new class extends Migration {
 		Schema::create('posts', function (Blueprint $table) {
 			$table->id(); // Set as primary Key $table->id()->primary();
 			$table->string('title')->unique();
-			$table->text('exerpt')->nullable(); // Can be null (DEFAULT NULL)
+			$table->text('excerpt')->nullable(); // Can be null (DEFAULT NULL)
 			$table->text('body');
 			$table->integer('min_to_read')->default(1);
 			$table->string('image_path')->nullable();
