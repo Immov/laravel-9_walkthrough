@@ -19,30 +19,25 @@ use Illuminate\Support\Facades\Route;
 	OPTIONS - Ask the server which verbs are allowed
 */
 
-// GET
-Route::get('/blog', [PostController::class, 'index'])
-	->name('blog.index'); // a href ={{ route('blog.index') }}
-Route::get("/blog/{id}", [PostController::class, 'show'])
-	->name('blog.show'); // route('blog.show', ['id' => 1])
 
+//Route Nesting
+Route::prefix('/blog')
+	->group(function () {
+		// GET
+		Route::get('/', [PostController::class, 'index'])->name('blog.index'); // a href ={{ route('blog.index') }}
+		Route::get("/{id}", [PostController::class, 'show'])->name('blog.show'); // route('blog.show', ['id' => 1])
 
-// POST
-Route::get('/blog/create', [PostController::class, 'create'])
-	->name('blog.create');
-Route::post('/blog', [PostController::class, 'store'])
-	->name('blog.store');
+		// POST
+		Route::get('/create', [PostController::class, 'create'])->name('blog.create');
+		Route::post('/', [PostController::class, 'store'])->name('blog.store');
 
-// PUT or PATCH
-Route::get('/blog/edit/{id}', [PostController::class, 'edit'])
-	->name('blog.edit');
-Route::patch('/blog/{id}', [PostController::class, 'update'])
-	->name('blog.update');
+		// PUT or PATCH
+		Route::get('/edit/{id}', [PostController::class, 'edit'])->name('blog.edit');
+		Route::patch('/{id}', [PostController::class, 'update'])->name('blog.update');
 
-// DELETE
-Route::delete('/blog/{id}', [PostController::class, 'destroy'])
-	->name('blog.destroy');
-
-
+		// DELETE
+		Route::delete('/{id}', [PostController::class, 'destroy'])->name('blog.destroy');
+	});
 
 
 // Route for invoke method (No need to put function name after HomeController::class) --> Good for Single function controller
