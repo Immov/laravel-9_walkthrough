@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FallbackController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
@@ -44,7 +45,8 @@ Route::prefix('/blog')
 Route::get('/', HomeController::class);
 
 
-
+// Fallback Route, like app.get('/*') on expressJs
+Route::fallback(FallbackController::class);
 
 
 // ==========NOTES==========
