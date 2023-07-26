@@ -121,3 +121,80 @@ return [
 ```
 
 `php artisan db:seed`
+
+## Query Builder
+
+index function on controller
+
+SELECT queries
+
+```php
+public function index() {
+
+	//Select
+	$posts = DB::select('SELECT * FROM posts WHERE id = 1');
+	$posts = DB::select('SELECT * FROM posts WHERE id = ?', [1]);
+	$posts = DB::select('SELECT * FROM posts WHERE id = :id', ['id' => 1]);
+
+	// Insert
+	$posts = DB::insert('INSERT INTO posts (title, excerpt, body, image_path, is_published, min_to_read)
+	VALUES(?, ?, ?, ?, ?, ?)',
+	['Test', 'Test', 'Test', 'test', true, 1]);
+
+	// Update
+	$posts = DB::update('UPDATE posts set body = ? where id = ?', ['Body 2', 201]);
+
+	// Delete
+	$posts = DB::delete('DELETE FROM posts where id = ?', [201]);
+
+	// Method chaining ->get()
+	$posts = DB::table('posts')->get();
+
+	$posts = DB::table('posts')
+			->select('title')  // specify the column to be selected
+			->get();
+
+	// Method chainings
+	$posts = DB::table('posts')
+		->where('id', 50) // WHERE ID == 50
+		->where('id', '>', 50) // WHERE ID > 50
+		->whereBetween('min_to_read', [2, 6]) // where min to read is between 2 and 6 (inclusive)
+		->whereNotBetween('min_to_read', [2, 6]) // where the value is not 2 until 6
+		->whereIn('min_to_read', [2, 6, 10]) // where the value is 2 or 6 or 10
+		->whereNull('excerpt') // select a null value
+		->whereNotNull('excerpt') // select a valut without a null on excerpt
+		// Select a unique value on min_to_read column, no duplicates
+		->select('min_to_read')
+		->distinct()
+		->orderBy('id', 'desc') // Sort descending
+		->inRandomOrder() // Sort in random order
+		// Skips the first 20 datas and select only 5 data after 20
+		->skip(20)
+		->take(5)
+		->find(100); // find where PRIMARY key == 100
+		// Returns the  value of 'body'of the first query where min_to_read == 5
+		->where('min_to_read', 5)
+		->value('body');
+		// Counts how many data that min_to_read == 5
+		->where('min_to_read', 5)
+		->count();
+		// Statistics
+		->min('min_to_read'); // Returns min('min_to_read)
+		->max('min_to_read'); // min max sum avg, self explanatory
+		->sum('min_to_read');
+		->avg('min_to_read');
+
+
+
+		->get(); //selects all data
+		->first(); // select only the first query
+
+	var_dump($posts);
+
+	return view('blog.index', ['name' => 'Immov']);
+}
+
+```
+
+Progress
+https://youtu.be/tL9oy3EAYDk?list=PLFHz2csJcgk_mM2jEf7t8P678O_jz83on&t=482

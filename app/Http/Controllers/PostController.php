@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller {
 	/**
@@ -11,6 +12,12 @@ class PostController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function index() {
+
+		$posts = DB::table('posts')
+			->avg('min_to_read');
+
+		dd($posts);
+
 		return view('blog.index', ['name' => 'Immov']);
 	}
 
