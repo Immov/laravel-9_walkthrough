@@ -196,5 +196,40 @@ public function index() {
 
 ```
 
+## Front End (TailwindCSS)
+
+Install dependencies
+`npm i -D tailwindcss postcss autoprefixer`
+
+Initialixe tailwindcss config (Not required)
+`npx tailwindcss init`
+
+1. Create config and specifies the directory of where to look the html files
+
+-   tailwind.config.js
+    ```js
+    /** @type {import('tailwindcss').Config} */
+    module.exports = {
+    	content: ["./resource/**/*.blade.php"],
+    	theme: {
+    		extend: {},
+    	},
+    	plugins: [],
+    };
+    ```
+
+2. Add Tailwind css to webpack.mix.js
+
+    ```js
+    mix.js("resources/js/app.js", "public/js").postCss(
+    	// files inside resource/js/app.js will be compiled to public/js
+    	"resources/css/app.css",
+    	"public/css",
+    	[require("tailwindcss")]
+    );
+    ```
+
+3. Compile the front end
+   `npm run watch` --> run `npm run build` everytime we save our view
+
 Progress
-https://youtu.be/tL9oy3EAYDk?list=PLFHz2csJcgk_mM2jEf7t8P678O_jz83on&t=482
