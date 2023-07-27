@@ -13,12 +13,10 @@ class PostController extends Controller {
 	 */
 	public function index() {
 
-		$posts = DB::table('posts')
-			->avg('min_to_read');
-
-		dd($posts);
-
-		return view('blog.index', ['name' => 'Immov']);
+		return view('blog.index', [
+			'posts' => DB::table('posts')->get(),
+			'none' => ''
+		]);
 	}
 
 	/**

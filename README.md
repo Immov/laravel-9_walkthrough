@@ -232,4 +232,24 @@ Initialixe tailwindcss config (Not required)
 3. Compile the front end
    `npm run watch` --> run `npm run build` everytime we save our view
 
+## Laravel Variables
+
+PostController
+
+```php
+return view('blog.index', [
+	'posts' => DB::table('posts')->get(), // SELECT * FROM POSTS
+]);
+```
+
+```php
+@forelse ($posts as $post)
+	{{ $post->id }}. {{ $post->title }} <br>
+@empty
+	<p>No postst have beed set</p> // will be shown if $posts ==
+@endforelse
+```
+
+### Hidden
+
 Progress
