@@ -44,6 +44,18 @@ Route::get('/blog/{id}/{name}', [PostController::class, 'index'])
 
 `Route::any('/blog', [PostController::class, 'index']);`
 
+## Laravel Blade links
+
+```php
+@forelse ($posts as $post)
+	<li>{{ $loop->iteration }}
+		<a href={{ route('blog.show', $post->id) }}>{{ $post->title }}</a>
+	</li>
+@empty
+	<li>No post have been made</li>
+@endforelse
+```
+
 # DB Notes
 
 ## Check DB Connection
@@ -261,8 +273,53 @@ $loop->first // returns true if it's the first item in the loop
 $loop->last // returns true if it's the last item in the loop
 $loop->depth // returns how many loop is being used, if nested loop like for loop inside for loop, will return 2
 $loop->parent // reference to the i loop if the loop is nested like for i, with for j inside
+```
+
+## Eloquent Model Conventions
+
+Make model
+`php artisan make:model Post`
+
+### Post.php on models configs
+
+```php
+protected $table = 'posts'; // which table for this model
+protected $primaryKey = 'title'; // define the prefered primary key
+protected $timestamps = false; // disable the timestamps table rather than deleting it
+protected $dateTime = 'U'; // only stores the seconds over time stamps
+
+protected $connection = 'sqlite'; // for using multiple drivers for specific model
+protected $attributes = [
+	'is_published' => true,
+]; // for defining the default value
+```
+
+### Retrieve data uding eloquent
+
+```php
+$posts = Post::all(); // select all, can't use method chaining
+$posts = Post::orderBy('id', 'desc')->take(5)->get(); // can add method chaining
+$posts = Post::where('min_to_read', '!=', '5')->get(); // where not equal to 5
+
+// Chunks
+Post::chunk(25, function($posts) {
+	foreach($posts as $post) {
+		echo $post->title . '<br>';
+	}
+});
+
+// Min max avg
+$posts = Post::get()->count(); // returns how many datas
+$posts = Post::sum('min_to_read'); // returns the sum of all min_to_read data
+$posts = Post::avg('min_to_read');
 
 
+public function show($id = 1) { // shows a single data
+		$posts = Post::findOrFail($id); // safer than Post::find()
+		return view('blog.index', [
+			'posts' => $posts
+		]);
+	}
 ```
 
 Progress

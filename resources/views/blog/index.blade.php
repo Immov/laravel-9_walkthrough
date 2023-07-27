@@ -10,12 +10,16 @@
 </head>
 
 <body>
-
-	@forelse ($posts as $post)
-		{{ $loop->index }}. {{ $post->title }} <br>
-	@empty
-		<p>No postst have beed set</p>
-	@endforelse
+	<a href={{ route('home.home') }}>Return to Homepage</a>
+	<ol>
+		@forelse ($posts as $post)
+			<li>{{ $loop->iteration }}
+				<a href={{ route('blog.show', $post->id) }}>{{ $post->title }}</a>
+			</li>
+		@empty
+			<li>No post have been made</li>
+		@endforelse
+	</ol>
 
 </body>
 

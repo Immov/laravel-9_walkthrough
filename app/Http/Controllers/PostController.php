@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,9 +14,10 @@ class PostController extends Controller {
 	 */
 	public function index() {
 
+		$posts = Post::orderBy('id', 'asc')->get();
+
 		return view('blog.index', [
-			'posts' => DB::table('posts')->get(),
-			'none' => ''
+			'posts' => $posts,
 		]);
 	}
 
@@ -25,7 +27,7 @@ class PostController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function create() {
-		//
+		return view('blog.create');
 	}
 
 	/**
@@ -44,8 +46,11 @@ class PostController extends Controller {
 	 * @param  int  $id
 	 * @return \Illuminate\Http\Response
 	 */
-	public function show($id = 1, $name = 'Immov') {
-		return ($id);
+	public function show($id = 1) {
+		$post = Post::findOrFail($id);
+		return view('blog.show', [
+			'post' => $post
+		]);
 	}
 
 	/**

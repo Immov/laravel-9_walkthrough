@@ -12,6 +12,8 @@
 	<h1 class="text-3xl p-2 font-bold">
 		Tailwind Text
 	</h1>
+	<a href={{ route('blog.index') }}>View Blogs</a><br>
+	<a href={{ route('blog.create') }}>Create Blog</a>
 
 </body>
 

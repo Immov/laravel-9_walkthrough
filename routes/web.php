@@ -20,6 +20,9 @@ use Illuminate\Support\Facades\Route;
 	OPTIONS - Ask the server which verbs are allowed
 */
 
+// Route::get('/blog/create', [PostController::class, 'create'])->name('create.create');
+
+// Route::resource('/blog', PostController::class);
 
 //Route Nesting
 Route::prefix('/blog')
@@ -29,8 +32,8 @@ Route::prefix('/blog')
 		Route::get("/{id}", [PostController::class, 'show'])->name('blog.show'); // route('blog.show', ['id' => 1])
 
 		// POST
-		Route::get('/create', [PostController::class, 'create'])->name('blog.create');
-		Route::post('/', [PostController::class, 'store'])->name('blog.store');
+		Route::get('/create', [PostController::class, 'create'])->name('blog.create'); // <-- This should be a POST request
+		Route::post('/create', [PostController::class, 'store'])->name('blog.store'); // <-- Use POST for creating a new blog post
 
 		// PUT or PATCH
 		Route::get('/edit/{id}', [PostController::class, 'edit'])->name('blog.edit');
@@ -42,7 +45,7 @@ Route::prefix('/blog')
 
 
 // Route for invoke method (No need to put function name after HomeController::class) --> Good for Single function controller
-Route::get('/', HomeController::class);
+Route::get('/', HomeController::class)->name('home.home');
 
 
 // Fallback Route, like app.get('/*') on expressJs
