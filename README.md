@@ -250,6 +250,19 @@ return view('blog.index', [
 @endforelse
 ```
 
-### Hidden
+### Hidden variables
+
+```php
+$loop->index // starts from 0
+$loop->iteration // starts from 1
+$loop->remaining // shows the remaining items to be shown (kinda like descending)
+$loop->count // returns the number of items that are being looped
+$loop->first // returns true if it's the first item in the loop
+$loop->last // returns true if it's the last item in the loop
+$loop->depth // returns how many loop is being used, if nested loop like for loop inside for loop, will return 2
+$loop->parent // reference to the i loop if the loop is nested like for i, with for j inside
+
+
+```
 
 Progress
