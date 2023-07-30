@@ -294,7 +294,7 @@ protected $attributes = [
 ]; // for defining the default value
 ```
 
-### Retrieve data uding eloquent
+### Retrieve data using eloquent
 
 ```php
 $posts = Post::all(); // select all, can't use method chaining
@@ -322,4 +322,110 @@ public function show($id = 1) { // shows a single data
 	}
 ```
 
+### Insert data using eloquent
+
+Form inside blade.php
+
+```html
+<form
+	action="{{ route('blog.store') }}"
+	method="POST"
+	enctype="multipart/form-data"
+>
+	@csrf
+	<div>
+		<label for="is_published">Is Published</label>
+		<input type="checkbox" name="is_published" />
+	</div>
+	<div>
+		<label for="title">Title</label>
+		<input type="text" name="title" placeholder="Title" />
+	</div>
+	<div>
+		<label for="excerpt">Excerpt</label>
+		<input type="text" name="excerpt" placeholder="Excerpt" />
+	</div>
+	<div>
+		<label for="min_to_read">Minutes to read</label>
+		<input type="number" name="min_to_read" placeholder="5 Minutes" />
+	</div>
+	<div>
+		<label for="body">Content</label>
+		<textarea
+			name="body"
+			cols="30"
+			rows="10"
+			placeholder="Contents..."
+		></textarea>
+	</div>
+	<div>
+		<label for="image">Select a file</label>
+		<input type="file" name="image" />
+	</div>
+	<button type="submit">Submit Post</button>
+</form>
+```
+
+PostController.php
+OOP PHP:
+
+```php
+public function store(Request $request) {
+	$data = $request->all(); // method to retrieve all data from the post
+	dd($data);
+
+	exit; // immediately return, does not execute the code below
+
+	$post = new Post(); // create a post object
+	$post->title = $request->title;
+	$post->excerpt = $request->excerpt;
+	$post->body = $request->body;
+	$post->image_path = $request->image_path;
+	$post->is_published = $request->is_published === 'on'; // if the value is on, return true
+	$post->min_to_read = $request->min_to_read;
+	$post->save(); // save to the database
+	return redirect(route('blog.index')); // Redirects to blog.index
+	}
+```
+
+Eloquent PHP:
+
+```php
+public function store(Request $request) {
+	Post::create([
+		'title' => $request->title,
+		'excerpt' => $request->excerpt,
+		'body' => $request->body,
+		'image_path' => $request->image_path,
+		'is_published' => $request->is_published === 'on',
+		'min_to_read' => $request->min_to_read
+	]);
+	return redirect(route('blog.index'));
+}
+```
+
+models/Post.php
+
+```php
+class Post extends Model {
+	protected $fillable = [
+		'title', 'excerpt', 'body', 'image_path', 'is_published', 'min_to_read'
+	]; // prevents unwanted insertion of unintendent values
+	use HasFactory;
+}
+```
+
 Progress
+
+### Image Upload
+
+Function to upload the image
+
+```php
+private function storeImage($request) {
+	$newImageName = uniqid() . '-' . $request->title . '.' . $request->image->extension();
+	// asda-[title].png
+
+	return $request->image->move(public_path('images', $newImageName)); //save the image to public/images witn the name $newImageName
+}
+```

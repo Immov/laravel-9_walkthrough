@@ -33,7 +33,7 @@ Route::prefix('/blog')
 
 		// POST
 		Route::get('/create', [PostController::class, 'create'])->name('blog.create'); // <-- This should be a POST request
-		Route::post('/create', [PostController::class, 'store'])->name('blog.store'); // <-- Use POST for creating a new blog post
+		Route::post('/', [PostController::class, 'store'])->name('blog.store'); // <-- Use POST for creating a new blog post
 
 		// PUT or PATCH
 		Route::get('/edit/{id}', [PostController::class, 'edit'])->name('blog.edit')->whereNumber('id');
