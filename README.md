@@ -1,3 +1,14 @@
+# How to clone laravel project
+
+`git clone [link]`
+`composer install`
+`npm install`
+`cp .env.example .env` --> or copy the orignal .env file
+Change DB on .en file
+`php artisan key:generate`
+`php artisan migrate`
+`php artisan serve`
+
 # Laravel 9 Tutorial
 
 [Source](https://youtube.com/playlist?list=PLFHz2csJcgk_mM2jEf7t8P678O_jz83on)
