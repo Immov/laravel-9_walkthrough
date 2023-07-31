@@ -10,6 +10,7 @@
 </head>
 
 <body>
+	<a href={{ route('blog.edit', $post->id) }} class="italic text-green-500 border-b-1 border-green-400">Edit</a>
 
 	<a href={{ route('blog.index') }}>Return to Blog Lists</a>
 	<h1>{{ $post->title }}</h1>

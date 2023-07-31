@@ -15,6 +15,7 @@
 		@forelse ($posts as $post)
 			<li>{{ $loop->iteration }}
 				<a href={{ route('blog.show', $post->id) }}>{{ $post->title }}</a>
+				<a href={{ route('blog.edit', $post->id) }} class="italic text-green-500 border-b-1 border-green-400">Edit</a>
 			</li>
 		@empty
 			<li>No post have been made</li>

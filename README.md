@@ -434,9 +434,139 @@ Function to upload the image
 
 ```php
 private function storeImage($request) {
+		$newImageName = uniqid() . '-' . $request->title . '.' . $request->image->extension();
+		$request->image->move(public_path('images'), $newImageName); // stores the image
+		return '/images/' . $newImageName; // returns the path ro public.images
+	}
+
+
+// Original, from video. Doesn't work
+private function storeImage($request) {
 	$newImageName = uniqid() . '-' . $request->title . '.' . $request->image->extension();
 	// asda-[title].png
 
 	return $request->image->move(public_path('images', $newImageName)); //save the image to public/images witn the name $newImageName
 }
+```
+
+### Upd
+
+edit.blade.php
+
+```php
+<form action="{{ route('blog.update', $post->id) }}" method="POST" enctype="multipart/form-data">
+	@csrf
+	@method('PATCH')
+	<div>
+		<label for="is_published">Is Published</label>
+		<input type="checkbox" {{ $post->is_published ? 'checked' : '' }} name="is_published" value="true">
+	</div>
+	<div>
+		<label for="title">Title</label>
+		<input type="text" name="title" placeholder="Title" value="{{ $post->title }}">
+	</div>
+	<div>
+		<label for="excerpt">Excerpt</label>
+		<input type="text" name="excerpt" placeholder="Excerpt" value="{{ $post->excerpt }}">
+	</div>
+	<div>
+		<label for="min_to_read">Minutes to read</label>
+		<input type="number" name="min_to_read" placeholder="5 Minutes" value="{{ $post->min_to_read }}">
+	</div>
+	<div>
+		<label for="body">Content</label>
+		<textarea name="body" cols="30" rows="10">{{ $post->body }}</textarea>
+	</div>
+	<div>
+		<label for="image">Select a file <input type="file" name="image"></label>
+
+	</div>
+<button type="submit">Edit Post</button>
+</form>
+```
+
+PostController.php
+
+```php
+public function edit($id) {
+		$post = Post::where('id', $id)->first();
+		return view('blog.edit', [
+			'post' => $post
+		]);
+	}
+
+public function update(Request $request, $id) {
+	$request->validate([
+		'title' => 'required|max:255|unique:posts,title,' . $id,
+		'excerpt' => 'required',
+		'body' => 'required',
+		'image_path' => ['mimes:png,jpg, jpeg', 'max:5048'],
+		'min_to_read' => 'min:0|max:60'
+
+	]);
+
+	$post = Post::findOrFail($id);
+
+	$data = $request->except(['_token', '_method']);
+	$data['is_published'] = $request->has('is_published'); // Convert checkbox value to bool
+
+	if ($request->hasFile('image_path')) {
+		$imagePath = $this->storeImage($request);
+		$data['image_path'] = $imagePath;
+	}
+
+	Post::where('id', $id)->update($data);
+	return redirect(route('blog.index'));
+	/* 	Bad method (all field must have values)
+		Post::where('id', $id)->update([
+		'title' => $request->title,
+		'excerpt' => $request->excerpt,
+		'body' => $request->body,
+		'image_path' => $request->image,
+		'is_published' => $request->is_published === 'on',
+		'min_to_read' => $request->min_to_read
+	]); */
+}
+```
+
+### Form Validation & Displaying Error Messages
+
+PostController
+
+```php
+public function store(Request $request) {
+	$request->validate([
+		'title' => 'required|unique:posts|max:255',
+		'excerpt' => 'required',
+		'body' => 'required',
+		'image' => ['required', 'mimes:png,jpg, jpeg', 'max:5048'],
+		// 'is_published' => '', true/false, no rules necessary
+		'min_to_read' => 'min:0|max:60'
+	]);
+
+	Post::create([
+		'title' => $request->title,
+		'excerpt' => $request->excerpt,
+		'body' => $request->body,
+		'image_path' => $this->storeImage($request),
+		'is_published' => $request->is_published === 'on',
+		'min_to_read' => $request->min_to_read
+	]);
+	return redirect(route('blog.index'));
+}
+```
+
+```html
+@if ($errors->any())
+<div class="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+	Something went wrong
+</div>
+<ul
+	class="border border-t-0 border-red-400, rounded-b bg-red-100 px-4 py-2 text-red-700"
+>
+	@foreach ($errors->all() as $error)
+	<li>{{ $error }}</li>
+	@endforeach
+</ul>
+@endif
 ```

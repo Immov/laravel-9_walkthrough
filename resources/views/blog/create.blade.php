@@ -12,6 +12,21 @@
 	<h1>Create a Blog</h1>
 
 	<div>
+		<div class="pb-8">
+
+			@if ($errors->any())
+				<div class="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+					Something went wrong
+				</div>
+				<ul class="border border-t-0 border-red-400, rounded-b bg-red-100 px-4 py-2 text-red-700">
+					@foreach ($errors->all() as $error)
+						<li>
+							{{ $error }}
+						</li>
+					@endforeach
+				</ul>
+			@endif
+		</div>
 		<form action="{{ route('blog.store') }}" method="POST" enctype="multipart/form-data">
 			@csrf
 			<div>
@@ -35,7 +50,7 @@
 				<textarea name="body" cols="30" rows="10" placeholder="Contents..."></textarea>
 			</div>
 			<div>
-				<label for="image">Select a file <input type="file" name="image"></label>
+				<label for="image_path">Select a file <input type="file" name="image_path"></label>
 
 			</div>
 			<button type="submit">Submit Post</button>
