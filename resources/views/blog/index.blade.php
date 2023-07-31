@@ -23,6 +23,7 @@
 		@forelse ($posts as $post)
 			<li>{{ $loop->iteration }}
 				<a href={{ route('blog.show', $post->id) }}>{{ $post->title }}</a>
+				- Made by: <a href="">{{ $post->user->name }}</a> on {{ $post->updated_at->format('d/m/Y') }}
 				<a href={{ route('blog.edit', $post->id) }} class="italic text-green-500 border-b-1 border-green-400">Edit</a>
 				<form action="{{ route('blog.destroy', $post->id) }}" method="POST">
 					@csrf

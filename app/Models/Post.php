@@ -10,4 +10,8 @@ class Post extends Model {
 		'title', 'excerpt', 'body', 'image_path', 'is_published', 'min_to_read'
 	]; // prevents unwanted insertion of unintendent values
 	use HasFactory;
+
+	public function user() {
+		return $this->belongsTo(User::class);
+	}
 }

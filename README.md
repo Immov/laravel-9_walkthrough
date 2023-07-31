@@ -636,3 +636,105 @@ public function store(PostFormRequest $request) {
 		$request->validated();
 }
 ```
+
+## Laravel Relationships
+
+### One to Many Relationship
+
+`composer update`
+`composer require laravel/breeze:1.7.0 --dev` Safest option
+create `welcome.blade.php`
+Backup `web.php` before running the command below
+run `php artisan breeze:install`
+`npm install && npm run dev`
+
+Restructure Post Migration
+
+create_posts_table.php
+
+```php
+$table->unsignedBigInteger('user_id');
+/*
+other column configs
+*/
+$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+```
+
+PostFactory.php
+
+```php
+'user_id' => 1
+```
+
+`php artisan migrate:refresh`
+
+Models/User.php
+
+```php
+public function posts(){
+	return $this->hasMany(Post::class);
+}
+```
+
+dashboard.blade.php
+
+```php
+<h1 class="text-xl font-bold pt-8 pb-2">
+	Posts of: {{ Auth::user()->name }}
+
+	@foreach(Auth::user()->posts as $post)
+		<h2>
+		{{ $post->title }}
+		</h2>
+	@endforeach
+</h1>
+```
+
+Models/Post.php
+
+```php
+public function user(){
+	return $this->belongsTo(User::class);
+}
+```
+
+blog/index.blade.php
+
+```php
+<a href="{{ route('blog.show', $post->id) }}">{{ $post->title }}</a>
+- Made by: <a href="">{{ $post->user->name }}</a> on {{ $post->updated_at->format('d/m/Y') }}
+```
+
+### One to One Relationship
+
+`php artisan make:model PostMeta -m`
+
+migration/create_post_meta_table.php
+
+```php
+public functio up(){
+	Schema::create('post', function (Blueprint $table) {
+		$table->id();
+		$table->unsignedBigInteger('post_id');
+		$table->string('meta_description');
+		$table->string('meta_keyword');
+		$table->string('meta_robots');
+		$table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
+		$table->timestamps();
+	});
+}
+```
+
+`php artisan migrate`
+
+Models/Post.php
+
+```php
+	public function meta(){
+		return $this->hasOne(PostMeta::class);
+	}
+```
+
+### Many to many Relationship
+
+## Authentication
