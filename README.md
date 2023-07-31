@@ -594,3 +594,45 @@ public function destroy($id) {
 	return redirect(route('blog.index'))->with('message', 'Post has been deleted');
 }
 ```
+
+## How to use Form Requests in Laravel
+
+Use form requests in Laravel to prevent duplication when working with form validation
+
+Create form request
+`php artisan make:request PostFormRequest`
+
+PostFormRequest.php
+
+```php
+public function authorize() {
+	return true;
+}
+
+public function rules() {
+	$rules = [
+		'title' => 'required|max:255|unique:posts,title,' . $this->id,
+		'excerpt' => 'required',
+		'body' => 'required',
+		'image_path' => ['mimes:png,jpg, jpeg', 'max:5048'],
+		'min_to_read' => 'min:0|max:60'
+	];
+	if (in_array($this->method(), ['POST'])) {
+		$rules['image_path'] =  ['required', 'mimes:png,jpg, jpeg', 'max:5048'];
+	}
+
+	return $rules;
+}
+```
+
+PostController.php
+
+```php
+public function update(PostFormRequest $request, $id) {
+		$request->validated();
+}
+
+public function store(PostFormRequest $request) {
+		$request->validated();
+}
+```

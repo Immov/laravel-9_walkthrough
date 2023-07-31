@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PostFormRequest;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -36,17 +37,8 @@ class PostController extends Controller {
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function store(Request $request) {
-
-		$request->validate([
-			'title' => 'required|unique:posts|max:255',
-			'excerpt' => 'required',
-			'body' => 'required',
-			'image_path' => ['required', 'mimes:png,jpg, jpeg', 'max:5048'],
-			// 'is_published' => '', true/false, no rules necessary
-			'min_to_read' => 'min:0|max:60'
-
-		]);
+	public function store(PostFormRequest $request) {
+		$request->validated();
 
 		Post::create([
 			'title' => $request->title,
@@ -92,15 +84,8 @@ class PostController extends Controller {
 	 * @param  int  $id
 	 * @return \Illuminate\Http\Response
 	 */
-	public function update(Request $request, $id) {
-		$request->validate([
-			'title' => 'required|max:255|unique:posts,title,' . $id,
-			'excerpt' => 'required',
-			'body' => 'required',
-			'image_path' => ['mimes:png,jpg, jpeg', 'max:5048'],
-			'min_to_read' => 'min:0|max:60'
-
-		]);
+	public function update(PostFormRequest $request, $id) {
+		$request->validated();
 
 		$post = Post::findOrFail($id);
 
