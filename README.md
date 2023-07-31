@@ -449,7 +449,7 @@ private function storeImage($request) {
 }
 ```
 
-### Upd
+### Update data using eloquent
 
 edit.blade.php
 
@@ -569,4 +569,28 @@ public function store(Request $request) {
 	@endforeach
 </ul>
 @endif
+```
+
+### Delete data using eloquent
+
+index.blade.php
+
+```php
+@if (session()->has('message'))
+	<div class="mx-auto w-4/5 pb-10">
+		<div class="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+			{{ session()->get('message') }}
+		</div>
+	</div>
+@endif
+```
+
+PostController.php
+
+```php
+public function destroy($id) {
+	Post::destroy($id);
+
+	return redirect(route('blog.index'))->with('message', 'Post has been deleted');
+}
 ```
