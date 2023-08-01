@@ -59,15 +59,15 @@
 
 			<div>
 				<label for="meta_description">Meta Description</label>
-				<input type="text" name="meta_description" value="{{ $post_meta->meta_description }}">
+				<input type="text" name="meta_description" value="{{ $post->meta->meta_description }}">
 			</div>
 			<div>
 				<label for="meta_keyword">Meta Keywords</label>
-				<input type="text" name="meta_keyword" value="{{ $post_meta->meta_keyword }}">
+				<input type="text" name="meta_keyword" value="{{ $post->meta->meta_keyword }}">
 			</div>
 			<div>
 				<label for="meta_robots">Meta Robots</label>
-				<input type="text" name="meta_robots" value="{{ $post_meta->meta_robots }}">
+				<input type="text" name="meta_robots" value="{{ $post->meta->meta_robots }}">
 			</div>
 		</form>
 	</div>

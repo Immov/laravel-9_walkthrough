@@ -18,4 +18,8 @@ class Post extends Model {
 	public function meta() {
 		return $this->hasOne(PostMeta::class);
 	}
+
+	public function categories() {
+		return $this->belongsToMany(Category::class);
+	}
 }

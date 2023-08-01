@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PostFormRequest;
+use App\Models\Category;
 use App\Models\Post;
 use App\Models\PostMeta;
 use Illuminate\Http\Request;
@@ -83,10 +84,8 @@ class PostController extends Controller {
 	 */
 	public function edit($id) {
 		$post = Post::where('id', $id)->first();
-		$post_meta = PostMeta::where('post_id', $id)->first();
 		return view('blog.edit', [
 			'post' => $post,
-			'post_meta' => $post_meta
 		]);
 	}
 

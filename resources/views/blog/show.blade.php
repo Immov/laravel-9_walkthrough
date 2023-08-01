@@ -20,6 +20,15 @@
 	<h1>{{ $post->title }}</h1>
 	<img src="{{ $post->image_path }}" alt='img/{{ $post->id }}'>
 	<p>{{ $post->body }}</p>
+	<ul>
+		<h2>Categories</h2>
+		@forelse ($post->categories as $category)
+			<li>{{ $category->title }}</li>
+		@empty
+			<li>Has no Categories</li>
+		@endforelse
+	</ul>
+
 </body>
 
 </html>

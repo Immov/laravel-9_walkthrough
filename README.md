@@ -705,7 +705,7 @@ blog/index.blade.php
 - Made by: <a href="">{{ $post->user->name }}</a> on {{ $post->updated_at->format('d/m/Y') }}
 ```
 
-### One to One Relationship [TODO]
+### One to One Relationship
 
 `php artisan make:model PostMeta -m`
 
@@ -832,20 +832,28 @@ protected $fillable = [
 ];
 ```
 
+edit.blade.php
+
+```php
+<div>
+	<label for="meta_description">Meta Description</label>
+	<input type="text" name="meta_description" value="{{ $post->meta->meta_description }}">
+</div>
+<div>
+	<label for="meta_keyword">Meta Keywords</label>
+	<input type="text" name="meta_keyword" value="{{ $post->meta->meta_keyword }}">
+</div>
+<div>
+	<label for="meta_robots">Meta Robots</label>
+	<input type="text" name="meta_robots" value="{{ $post->meta->meta_robots }}">
+</div>
+```
+
 To apply the same to update method
 
 PostController.php
 
 ```php
-public function edit($id) {
-	$post = Post::where('id', $id)->first();
-	$post_meta = PostMeta::where('post_id', $id)->first(); // add this line
-	return view('blog.edit', [
-		'post' => $post,
-		'post_meta' => $post_meta // add this line
-	]);
-}
-
 public function update(PostFormRequest $request, $id) {
 		$request->validated();
 
@@ -868,5 +876,71 @@ public function update(PostFormRequest $request, $id) {
 ```
 
 ### Many to many Relationship
+
+Many Posts can have many categories
+Many Categories can have many posts
+
+`php artisan make:model Category -m`
+
+create a new migration for many-to-many relation
+`php artisan make:migration create_category_post_table` --> naming conventions, aphabetically ascending
+
+migration/create_categories_table.php
+
+```php
+public function up() {
+	Schema::create('categories', function (Blueprint $table) {
+		$table->id();
+		$table->string('title');
+		$table->timestamps();
+	});
+}
+```
+
+migration/create_category_post_table.php
+
+```php
+public function up() {
+		Schema::create('category_post', function (Blueprint $table) {
+			$table->unsignedBigInteger('category_id');
+			$table->unsignedBigInteger('post_id');
+
+			// FK Constraints
+			$table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
+			$table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
+		});
+	}
+```
+
+Run migration `php artisan migrate`
+
+Insert data to `categories` table and add their relations on `category_post` table
+
+Add function on `Models/Post.php` and `Models/Category.php`
+
+```php
+// For Post.php
+public function categories() {
+	return $this->belongsToMany(Category::class);
+}
+// For Category.php
+public function posts() {
+	return $this->belongsToMany(Post::class);
+}
+```
+
+Output to web
+show.blade.php
+
+```php
+<ul>
+	<h2>Categories</h2>
+	@forelse ($post->categories as $category)
+		<li>{{ $category->title }}</li>
+	@empty
+		<li>Has no Categories</li>
+	@endforelse
+</ul>
+```
 
 ## Authentication
