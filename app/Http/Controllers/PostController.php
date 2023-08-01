@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller {
+
+	public function __construct() {
+		$this->middleware('auth')->only(['create', 'edit', 'destroy']);
+	}
 	/**
 	 * Display a listing of the resource.
 	 *

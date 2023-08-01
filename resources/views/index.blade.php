@@ -13,7 +13,10 @@
 		Tailwind Text
 	</h1>
 	<a href={{ route('blog.index') }}>View Blogs</a><br>
-	<a href={{ route('blog.create') }}>Create Blog</a>
+
+	@if (Auth::user())
+		<a href={{ route('blog.create') }}>Create Blog</a>
+	@endif
 
 </body>
 

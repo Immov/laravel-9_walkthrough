@@ -944,3 +944,40 @@ show.blade.php
 ```
 
 ## Authentication
+
+Make User need to login to access create, edit, and delete blogs
+
+web.php
+
+```php
+Route::resource('blog', PostController::class)->middleware('auth'); // works on signle routes
+```
+
+The better way to do (Go to individual controller)
+
+PostController.php
+
+```php
+public function __construct() { // put on top
+	$this->middleware('auth')->only(['create', 'edit', 'update', 'destroy']); //only ([arrays of methods that require the user to login])
+}
+```
+
+Hide the create, edit, delete buttons if not logged in
+
+blog/index.blade.php
+
+```php
+@if (Auth::user())
+		<a href={{ route('blog.create') }}>Create Blog</a> // hide create blog button
+@endif
+
+@if (Auth::id() == $post->user->id) // hide edit and delete button if not the blog author
+	<a href={{ route('blog.edit', $post->id) }} class="italic text-green-500 border-b-1 border-green-400">Edit</a>
+	<form action="{{ route('blog.destroy', $post->id) }}" method="POST">
+		@csrf
+		@method('DELETE')
+		<button class="pt-3 text-red-500 pr-3" type="submit">Delete</button>
+	</form>
+@endif
+```
