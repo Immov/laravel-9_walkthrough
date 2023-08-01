@@ -705,15 +705,15 @@ blog/index.blade.php
 - Made by: <a href="">{{ $post->user->name }}</a> on {{ $post->updated_at->format('d/m/Y') }}
 ```
 
-### One to One Relationship
+### One to One Relationship [TODO]
 
 `php artisan make:model PostMeta -m`
 
 migration/create_post_meta_table.php
 
 ```php
-public functio up(){
-	Schema::create('post', function (Blueprint $table) {
+public function up(){
+	Schema::create('post_metas', function (Blueprint $table) {
 		$table->id();
 		$table->unsignedBigInteger('post_id');
 		$table->string('meta_description');
@@ -733,6 +733,138 @@ Models/Post.php
 	public function meta(){
 		return $this->hasOne(PostMeta::class);
 	}
+```
+
+Create input fields for post meta
+create.blade.php
+
+```php
+<div>
+	<label for="meta_description">Meta Description</label>
+	<input type="text" name="meta_description">
+</div>
+<div>
+	<label for="meta_keyword">Meta Keyword</label>
+	<input type="text" name="meta_keyword">
+</div>
+<div>
+	<label for="meta_robots">Meta Robots</label>
+	<input type="text" name="meta_robots">
+</div>
+```
+
+Show metadatas
+show.blade.php
+
+```php
+<meta name="description" content="{{ $post->meta->meta_description ? $post->meta->meta_description : '' }}">
+<meta name="keyword" content="{{ $post->meta->meta_keyword ? $post->meta->meta_keyword : '' }}">
+<meta name="robots" content="{{ $post->meta->meta_robots ? $post->meta->meta_robots : '' }}">
+```
+
+Modify Store function to includes the foreign keys
+PostController.php
+
+```php
+	public function store(PostFormRequest $request) {
+		$request->validated();
+
+		$post = Post::create([
+			'user_id' => Auth::id(),
+			'title' => $request->title,
+			'excerpt' => $request->excerpt,
+			'body' => $request->body,
+			'image_path' => $this->storeImage($request),
+			'is_published' => $request->is_published === 'on',
+			'min_to_read' => $request->min_to_read
+		]);
+
+		$post->meta()->create([
+			'post_id' => $post->id,
+			'meta_description' => $request->meta_description,
+			'meta_keyword' => $request->meta_keyword,
+			'meta_robots' => $request->meta_robots
+		]);
+
+		return redirect(route('blog.index'));
+	}
+```
+
+database.php
+
+```php
+'mysql' => [
+	'driver' => 'mysql',
+	'url' => env('DATABASE_URL'),
+	'host' => env('DB_HOST', '127.0.0.1'),
+	'port' => env('DB_PORT', '3306'),
+	'database' => env('DB_DATABASE', 'forge'),
+	'username' => env('DB_USERNAME', 'forge'),
+	'password' => env('DB_PASSWORD', ''),
+	'unix_socket' => env('DB_SOCKET', ''),
+	'charset' => 'utf8mb4',
+	'collation' => 'utf8mb4_unicode_ci',
+	'prefix' => '',
+	'prefix_indexes' => true,
+	'strict' => false,
+	'engine' => null,
+	'options' => extension_loaded('pdo_mysql') ? array_filter([
+		PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+	]) : [],
+],
+```
+
+Change model:
+
+Post.php
+
+```php
+protected $fillable = [
+	'user_id', 'title', 'excerpt', 'body', 'image_path', 'is_published', 'min_to_read'
+];
+```
+
+PostMeta.php
+
+```php
+protected $fillable = [
+	'post_id', 'meta_description', 'meta_keyword', 'meta_robots'
+];
+```
+
+To apply the same to update method
+
+PostController.php
+
+```php
+public function edit($id) {
+	$post = Post::where('id', $id)->first();
+	$post_meta = PostMeta::where('post_id', $id)->first(); // add this line
+	return view('blog.edit', [
+		'post' => $post,
+		'post_meta' => $post_meta // add this line
+	]);
+}
+
+public function update(PostFormRequest $request, $id) {
+		$request->validated();
+
+		$data = $request->except(['_token', '_method', 'meta_description', 'meta_keyword', 'meta_robots']);
+		$data['is_published'] = $request->has('is_published'); // Convert checkbox value to bool
+
+		if ($request->hasFile('image_path')) {
+			$imagePath = $this->storeImage($request);
+			$data['image_path'] = $imagePath;
+		}
+
+		$data_meta = $request->except(['_token', '_method', 'title', 'excerpt', 'min_to_read', 'body']); // add this line
+
+		Post::where('id', $id)->update($data);
+		PostMeta::where('post_id', $id)->update($data_meta); // add this line
+
+		return redirect(route('blog.index'));
+	}
+
 ```
 
 ### Many to many Relationship

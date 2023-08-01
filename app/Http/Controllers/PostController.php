@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PostFormRequest;
 use App\Models\Post;
+use App\Models\PostMeta;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller {
@@ -40,7 +42,8 @@ class PostController extends Controller {
 	public function store(PostFormRequest $request) {
 		$request->validated();
 
-		Post::create([
+		$post = Post::create([
+			'user_id' => Auth::id(),
 			'title' => $request->title,
 			'excerpt' => $request->excerpt,
 			'body' => $request->body,
@@ -48,6 +51,14 @@ class PostController extends Controller {
 			'is_published' => $request->is_published === 'on',
 			'min_to_read' => $request->min_to_read
 		]);
+
+		$post->meta()->create([
+			'post_id' => $post->id,
+			'meta_description' => $request->meta_description,
+			'meta_keyword' => $request->meta_keyword,
+			'meta_robots' => $request->meta_robots
+		]);
+
 		return redirect(route('blog.index'));
 	}
 
@@ -72,8 +83,10 @@ class PostController extends Controller {
 	 */
 	public function edit($id) {
 		$post = Post::where('id', $id)->first();
+		$post_meta = PostMeta::where('post_id', $id)->first();
 		return view('blog.edit', [
-			'post' => $post
+			'post' => $post,
+			'post_meta' => $post_meta
 		]);
 	}
 
@@ -87,9 +100,7 @@ class PostController extends Controller {
 	public function update(PostFormRequest $request, $id) {
 		$request->validated();
 
-		$post = Post::findOrFail($id);
-
-		$data = $request->except(['_token', '_method']);
+		$data = $request->except(['_token', '_method', 'meta_description', 'meta_keyword', 'meta_robots']);
 		$data['is_published'] = $request->has('is_published'); // Convert checkbox value to bool
 
 		if ($request->hasFile('image_path')) {
@@ -97,7 +108,11 @@ class PostController extends Controller {
 			$data['image_path'] = $imagePath;
 		}
 
+		$data_meta = $request->except(['_token', '_method', 'title', 'excerpt', 'min_to_read', 'body']);
+
 		Post::where('id', $id)->update($data);
+		PostMeta::where('post_id', $id)->update($data_meta);
+
 		return redirect(route('blog.index'));
 		/* 	Bad method (all field must have values)
 			Post::where('id', $id)->update([
